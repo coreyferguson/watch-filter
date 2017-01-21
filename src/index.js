@@ -1,32 +1,80 @@
 
-// This is the `main` NPM class to be transcoded into `babel/index.js`
+import path from 'path';
 
-// Export the class to enable test of constructor
-export class WatchFilter {
+export default class WatchFilter {
 
-  constructor(myName) {
-    this._myName = myName || 'world';
+  constructor(config) {
+    config = config || {};
+
+    this._projectDirectory = config.projectDirectory;
+    if (this._projectDirectory === undefined) {
+      throw new Error('projectDirectory must be defined');
+    }
+
+    // folder excludes
+    config.folderExcludes = config.folderExcludes || [];
+    this._folderExcludes = config.folderExcludes.map(function(string) {
+      return new RegExp(string);
+    });
+
+    // file excludes
+    config.fileExcludes = config.fileExcludes || [];
+    this._fileExcludes = config.fileExcludes.map(function(string) {
+      return new RegExp(string);
+    });
+
+    // bind `this` context
+    this.filter = this.filter.bind(this);
   }
 
-  sayHello() {
-    console.log(`Hello ${this._myName}`);
+  /**
+   * Filter function used by https://github.com/mikeal/watch
+   */
+  filter(f, stat) {
+    var file = this._parseRelativePath(f);
+    if (stat.isDirectory() && (
+        this._isExcludedDirectory(file))
+    ) {
+      return false;
+    } else if (stat.isFile() && (
+        this._isExcludedFile(file))
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
+  /**
+   * Returns a new stirng of path relative to project root
+   */
+  _parseRelativePath(f) {
+    return f.replace(this._projectDirectory, '');
   }
 
-  timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  /**
+   * Indicates if directory is excluded from watch
+   */
+  _isExcludedDirectory(directory) {
+    for (var i=0; i<this._folderExcludes.length; i++) {
+      if (this._folderExcludes[i].test(directory)) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  fulfill() {
-    return Promise.resolve('yay');
-  }
-
-  reject() {
-    return Promise.reject(new Error('boo'));
+  /**
+   * Indicates if file is excluded from watch
+   */
+  _isExcludedFile(file) {
+    for (var i=0; i<this._fileExcludes.length; i++) {
+      if (this._fileExcludes[i].test(file)) {
+        return true;
+        break;
+      }
+    }
+    return false;
   }
 
 }
-
-// Export a singleton instance
-// This makes stubbing functions easy in tests.
-const instance = new WatchFilter();
-export default instance;
