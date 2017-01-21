@@ -5,9 +5,6 @@
   "license": "MIT",
   "author": "Corey Ferguson <corey.t.ferguson@gmail.com>",
   "main": "babel/index.js",
-  "bin": {
-    "watch-filter": "./bin/job.js"
-  },
   "scripts": {
     "babel": "./node_modules/.bin/babel src --out-dir babel --source-maps inline",
     "istanbul": "./node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- --compilers js:babel-register test/unit test/integration",

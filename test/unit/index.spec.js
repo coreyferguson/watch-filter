@@ -1,6 +1,6 @@
 
 import { expect, sinon } from '../support/test-utils';
-import instance, { WatchFilter } from '../../src/index';
+import WatchFilter from '../../src/index';
 
 describe('WatchFilter unit test', function() {
 
@@ -10,34 +10,40 @@ describe('WatchFilter unit test', function() {
     sandbox.restore();
   });
 
-  it('testing the constructor', function() {
-    expect(new WatchFilter()._myName).to.be.eql('world');
-    expect(new WatchFilter('corey')._myName).to.eql('corey');
+  it('construction without required `projectDirectory` option', function() {
+    expect(() => new WatchFilter()).to.throw(Error);
   });
 
-  it('using sinon', function() {
-    // replace console.log with a spy we can question later
-    const spy = sandbox.stub(console, 'log');
-    instance.sayHello();
-    expect(spy).to.be.calledOnce;
-  });
-
-  it('handling promises', function() {
-    const beforeMs = new Date().getTime();
-    // be sure to return your promise chain
-    return instance.timeout(10).then(() => {
-      const afterMs = new Date().getTime();
-      expect(afterMs - beforeMs)
-        .to.be.above(9)
-        .and.to.be.below(15);
+  it('default construction', function() {
+    const watchFilter = new WatchFilter({
+      projectDirectory: '/home/corey'
     });
+    expect(watchFilter._folderExcludes).to.eql([]);
+    expect(watchFilter._fileExcludes).to.eql([]);
   });
 
-  it('using chai-as-promised', function() {
-    return Promise.all([
-      expect(instance.fulfill()).to.eventually.eql('yay'),
-      expect(instance.reject()).to.eventually.be.rejectedWith(/boo/)
-    ]);
+  it('construct folder excludes', function() {
+    const watchFilter = new WatchFilter({
+      projectDirectory: '/home/corey',
+      folderExcludes: [
+        '^node_modules'
+      ]
+    });
+    expect(watchFilter._folderExcludes).to.eql([/^node_modules/]);
+    expect(watchFilter._isExcludedDirectory('src')).to.be.false;
+    expect(watchFilter._isExcludedDirectory('node_modules')).to.be.true;
+  });
+
+  it('construct file excludes', function() {
+    const watchFilter = new WatchFilter({
+      projectDirectory: '/home/corey',
+      fileExcludes: [
+        '^\\.gitignore$'
+      ]
+    });
+    expect(watchFilter._fileExcludes).to.eql([/^\.gitignore$/]);
+    expect(watchFilter._isExcludedFile('src/index.js')).to.be.false;
+    expect(watchFilter._isExcludedFile('.gitignore')).to.be.true;
   });
 
 });

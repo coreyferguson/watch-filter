@@ -1,11 +1,17 @@
 
 # watch-filter
 
-## Usage
+## Install
 
 ```bash
-npm install -g watch-filter
-watch-filter
+npm install watch-filter
+```
+
+## Usage
+
+```javascript
+var watchFilter = require('watch-filter');
+watchFilter.sayHello();
 ```
 
 ## Contribution
