@@ -8,7 +8,7 @@
 ## Install
 
 ```bash
-npm install --save-dev watch-filter
+npm install --save-dev watch watch-filter
 ```
 
 ## Usage
