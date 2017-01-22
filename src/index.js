@@ -10,17 +10,18 @@ export default class WatchFilter {
     if (this._projectDirectory === undefined) {
       throw new Error('projectDirectory must be defined');
     }
+    this._projectDirectoryRegExp = new RegExp(`^${this._projectDirectory}/?`);
 
     // folder excludes
     config.folderExcludes = config.folderExcludes || [];
     this._folderExcludes = config.folderExcludes.map(function(string) {
-      return new RegExp(string);
+      return new RegExp(string, 'g');
     });
 
     // file excludes
     config.fileExcludes = config.fileExcludes || [];
     this._fileExcludes = config.fileExcludes.map(function(string) {
-      return new RegExp(string);
+      return new RegExp(string, 'g');
     });
 
     // bind `this` context
@@ -49,7 +50,7 @@ export default class WatchFilter {
    * Returns a new stirng of path relative to project root
    */
   _parseRelativePath(f) {
-    return f.replace(this._projectDirectory, '');
+    return f.replace(this._projectDirectoryRegExp, '');
   }
 
   /**
@@ -71,7 +72,6 @@ export default class WatchFilter {
     for (var i=0; i<this._fileExcludes.length; i++) {
       if (this._fileExcludes[i].test(file)) {
         return true;
-        break;
       }
     }
     return false;
