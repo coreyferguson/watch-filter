@@ -1,6 +1,6 @@
 {
   "name": "watch-filter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generic filter for https://github.com/mikeal/watch.",
   "license": "MIT",
   "author": "Corey Ferguson <corey.t.ferguson@gmail.com>",
