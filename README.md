@@ -1,6 +1,10 @@
 
 # watch-filter
 
+## Summary
+
+[Watch](https://github.com/mikeal/watch) filter for excluding files and folders by regular expressions.
+
 ## Install
 
 ```bash
